@@ -5,6 +5,9 @@ from PIL import Image, ImageTk
 import os
 import uuid
 import pyperclip
+from peewee import *
+import database_handler as dh
+from models import FileList, LocalDetails
 
 '''
 GUI for file list frame
@@ -13,13 +16,16 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
     
     file_mapping = {} # Maps : obj_instance -> file_name
     id_mapping = {} # Maps : file_name -> unique_id
-
+    
     # Constructor
     def __init__(self, master, **kwargs):
         
         # Checks if file_list attribute exists
         self.file_list = kwargs["file_list"]
         kwargs.pop("file_list")
+
+        self.id_mapping = kwargs["id_mapping"]
+        kwargs.pop("id_mapping")
 
         super().__init__(master, **kwargs)
 
@@ -29,12 +35,7 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
     # Builds the file list
     def build_file_list(self, file_list, type="BUILD") :
         for idx, i in enumerate(file_list) : 
-            u_id = str(uuid.uuid4().fields[-1])[:5]
-
-            if i in self.id_mapping : 
-                u_id = self.id_mapping[i]
-            else :
-                self.id_mapping[i] = u_id
+            u_id = self.id_mapping[i]
 
             ctkframe = customtkinter.CTkFrame(self, width=570, height=80, fg_color=("#5B5B5B", "#5B5B5B"))
             upl_lbl_file = customtkinter.CTkLabel(ctkframe, text=f"FILE NAME : {os.path.basename(i)}", text_color="#e5e5e5", font=("Songti TC", 15))
@@ -50,7 +51,8 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
             ctkframe.grid(row=row_idx * 2, column=0, padx=10, pady=10)
 
     # Updates the file list
-    def update_file_list(self) :
+    def update_file_list(self, new_file) :
+        self.id_mapping.update(new_file)
         self.build_file_list([self.file_list[len(self.file_list) - 1]], type="UPDATE")
 
     # Deletes files removed by user
@@ -61,6 +63,7 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
         for k, v in self.file_mapping.items() :
             k.destroy()
         self.file_mapping = {}
+        FileList.get(FileList.filepath == file_name).delete_instance()
         self.build_file_list(file_list=self.file_list)
 
     # Copy Unique ID
@@ -74,11 +77,15 @@ Main GUI
 '''
 class App(customtkinter.CTk):
 
-    auth_token = "AgdxW2IUdhs"
+    auth_token = ""
     file_list = []
+    id_mapping = {}
 
-    def __init__(self):
+    def __init__(self, token, file_list):
         super().__init__()
+        self.auth_token = token
+        self.file_list = list(file_list.keys())
+        self.id_mapping = file_list
 
         width = 700
         height = 780
@@ -121,7 +128,7 @@ class App(customtkinter.CTk):
         heading_upl.grid(row=3, column=0, padx=0, pady = 30)
 
         # Frame for uploaded files content
-        self.my_frame = FileListFrame(master=self, width=600, height=200, file_list=self.file_list)
+        self.my_frame = FileListFrame(master=self, width=600, height=200, file_list=self.file_list, id_mapping=self.id_mapping)
         self.my_frame.grid(row=4, column=0, padx=20, pady=0)
 
     '''
@@ -131,7 +138,7 @@ class App(customtkinter.CTk):
         filename = filedialog.askopenfilename()
         if filename :
             file_path, file_extension = os.path.splitext(filename)
-            if file_extension not in ['.parquet', '.csv', '.xlsx'] :
+            if file_extension not in ['.parquet', '.csv', '.xlsx', '.xls'] :
                 tkinter.messagebox.showinfo(title="File type not supported", message="This file type isn't supported. Only .parquet, .csv and .xlsx are allowed.")
                 return
 
@@ -140,13 +147,18 @@ class App(customtkinter.CTk):
                 return
 
             self.file_list.append(filename)
-            filename = os.path.basename(filename)
-
-            # Indicate, and disable file upload
-            self.file_label_string.set(f"Uploading {filename} ...")
+            filename_trunc = os.path.basename(filename)
+            self.file_label_string.set(f"Uploading {filename_trunc} ...")
             self.button_upload.configure(state="disabled")
+            
+            res_uid = th.insert_file_upload(f_path=filename)
 
-            self.my_frame.update_file_list()
+            if res_uid : 
+                self.file_label_string.set("SELECT A FILE FROM DIRECTORY")
+                self.button_upload.configure(state="normal")
+                self.my_frame.update_file_list({filename : res_uid})
+                self.id_mapping[filename] = res_uid
+
             return
     
     '''
@@ -157,5 +169,7 @@ class App(customtkinter.CTk):
         pyperclip.copy(self.auth_token)
 
 
-app = App()
+th = dh.TableHandler()
+file_list = th.get_file_uploads()
+app = App(token=th.auth_token, file_list=file_list)
 app.mainloop()
