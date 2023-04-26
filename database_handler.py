@@ -1,5 +1,4 @@
 from models import LocalDetails, FileList
-import sqlite3
 from peewee import *
 import string, random
 

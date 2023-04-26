@@ -3,11 +3,12 @@ import tkinter
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import os
-import uuid
 import pyperclip
 from peewee import *
 import database_handler as dh
-from models import FileList, LocalDetails
+import remote_db_handler as rh
+from models import *
+from tkinter.messagebox import askyesno
 
 '''
 GUI for file list frame
@@ -58,13 +59,17 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
     # Deletes files removed by user
     def delete_file(self, obj) :
         file_name = self.file_mapping[obj]
-        self.file_list.remove(file_name)
-        self.id_mapping.pop(file_name)
-        for k, v in self.file_mapping.items() :
-            k.destroy()
-        self.file_mapping = {}
-        FileList.get(FileList.filepath == file_name).delete_instance()
-        self.build_file_list(file_list=self.file_list)
+        ans = askyesno(title='confirmation', message=f"Are you sure you want to delete {os.path.basename(file_name)}? Deleting this entry would result in this table being deleted as well.")
+        if ans : 
+            self.file_list.remove(file_name)
+            del_id = self.id_mapping.pop(file_name)
+            for k, v in self.file_mapping.items() :
+                k.destroy()
+            self.file_mapping = {}
+            FileList.get(FileList.filepath == file_name).delete_instance()
+            trh = rh.RemoteDB(del_id, file_name)
+            trh.delete_table()
+            self.build_file_list(file_list=self.file_list)
 
     # Copy Unique ID
     def copy_uid(self, obj) :
@@ -152,8 +157,10 @@ class App(customtkinter.CTk):
             self.button_upload.configure(state="disabled")
             
             res_uid = th.insert_file_upload(f_path=filename)
-
-            if res_uid : 
+            trh = rh.RemoteDB(res_uid, filename)
+            populate = trh.populate_table()
+            
+            if res_uid and populate: #TODO : Delete entry if db population failed
                 self.file_label_string.set("SELECT A FILE FROM DIRECTORY")
                 self.button_upload.configure(state="normal")
                 self.my_frame.update_file_list({filename : res_uid})
