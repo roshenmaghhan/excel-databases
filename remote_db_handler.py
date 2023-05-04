@@ -41,7 +41,7 @@ class RemoteDB() :
         res = {}
         res['table_name'] = self.table_name
         res['columns'] = []
-        self.df = pd.read_parquet(self.file) #TODO: Read excels, parquet and csv
+        self.df = self.get_df_by_type(self.file) #DONE: Read excels, parquet and csv
 
         for c in self.df.columns : 
             obj = {}
@@ -86,18 +86,20 @@ class RemoteDB() :
     Populates the table based on data file
     '''
     def populate_table(self) :
-        df = self.df.copy() # Make a copy
+        try : 
+            df = self.df.copy() # Make a copy
 
-        for c in df.columns : 
-            if df[c].dtype == "object" :
-                df[c] = df[c].astype(str)
+            for c in df.columns : 
+                if df[c].dtype == "object" :
+                    df[c] = df[c].astype(str)
 
-        df = df.replace({np.nan: None})
+            df = df.replace({np.nan: None})
 
-        rows = df.to_dict(orient="records")
-        self.model.insert_many(rows).execute()
-        
-        return True
+            rows = df.to_dict(orient="records")
+            self.model.insert_many(rows).execute()
+            return True
+        except : 
+            return False # If issue encountered, return False
     
     '''
     Deletes the entire content of the table
@@ -110,3 +112,17 @@ class RemoteDB() :
     '''
     def delete_table(self) : 
         self.database_choice.drop_tables((self.model))
+
+
+    '''
+    Returns df depending on file extension
+    '''
+    def get_df_by_type(self, file) :
+        filename, ext = os.path.splitext(file)
+
+        if ext == '.parquet' : 
+            return pd.read_parquet(file)
+        elif ext == '.csv' : 
+            return pd.read_csv(file)
+        elif ext == '.xls' or ext == '.xslx' : 
+            return pd.read_excel(file)

@@ -158,7 +158,7 @@ class App(customtkinter.CTk):
             
             res_uid = th.insert_file_upload(f_path=filename)
             trh = rh.RemoteDB(res_uid, filename)
-            populate = trh.populate_table() #TODO: Check if values are properly populated
+            populate = trh.populate_table() #DONE: Check if values are properly populated
             
             if res_uid and populate: #TODO : Delete entry if db population failed
                 self.file_label_string.set("SELECT A FILE FROM DIRECTORY")
