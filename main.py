@@ -158,7 +158,7 @@ class App(customtkinter.CTk):
             
             res_uid = th.insert_file_upload(f_path=filename)
             trh = rh.RemoteDB(res_uid, filename)
-            populate = trh.populate_table()
+            populate = trh.populate_table() #TODO: Check if values are properly populated
             
             if res_uid and populate: #TODO : Delete entry if db population failed
                 self.file_label_string.set("SELECT A FILE FROM DIRECTORY")
@@ -175,7 +175,7 @@ class App(customtkinter.CTk):
     def copy_token(self) :
         pyperclip.copy(self.auth_token)
 
-
+#TODO: Clear all file entries, and db
 th = dh.TableHandler()
 file_list = th.get_file_uploads()
 app = App(token=th.auth_token, file_list=file_list)
