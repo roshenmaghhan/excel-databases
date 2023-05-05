@@ -18,7 +18,7 @@ class RemoteDB() :
     '''
     Constructor
     '''
-    def __init__(self, table_name, file) :
+    def __init__(self, table_name="", file="") :
         self.database_choice = PostgresqlDatabase(os.environ["POSTGRES_DB"], 
                                                   user=os.environ["POSTGRES_USER"], 
                                                   password=os.environ["POSTGRES_PASSWORD"],
@@ -112,7 +112,6 @@ class RemoteDB() :
     '''
     def delete_table(self) : 
         self.database_choice.drop_tables((self.model))
-
 
     '''
     Returns df depending on file extension
