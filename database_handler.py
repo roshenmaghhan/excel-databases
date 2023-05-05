@@ -69,3 +69,7 @@ class TableHandler() :
     # Delete all records of file_list table
     def delete_file_uploads(self) :
         FileList.delete().execute()
+
+    # Delete a particular file by id
+    def delete_by_id(self, id) :
+        FileList.delete().where(unique_id=id)

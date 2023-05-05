@@ -160,11 +160,13 @@ class App(customtkinter.CTk):
             trh = rh.RemoteDB(res_uid, filename)
             populate = trh.populate_table() #DONE: Check if values are properly populated
             
-            if res_uid and populate: #TODO : Delete entry if db population failed
+            if populate: #DONE : Delete entry if db population failed
                 self.file_label_string.set("SELECT A FILE FROM DIRECTORY")
                 self.button_upload.configure(state="normal")
                 self.my_frame.update_file_list({filename : res_uid})
                 self.id_mapping[filename] = res_uid
+            else : # If it failed to populate
+                th.delete_by_id(res_uid)
 
             return
     
