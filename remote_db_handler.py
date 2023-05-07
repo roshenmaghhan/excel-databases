@@ -19,12 +19,7 @@ class RemoteDB() :
     Constructor
     '''
     def __init__(self, table_name="", file="") :
-        self.database_choice = PostgresqlDatabase(os.environ["POSTGRES_DB"], 
-                                                  user=os.environ["POSTGRES_USER"], 
-                                                  password=os.environ["POSTGRES_PASSWORD"],
-                                                  host=os.environ["POSTGRES_HOST"], 
-                                                  port=5432)
-        self.database_choice.connect()
+        self.init_db_conn()
         self.table_name = table_name
         self.file = file 
         self.table_json = self.create_table_dict()
@@ -34,6 +29,23 @@ class RemoteDB() :
         else : 
             self.model = self.table_operation(operation="GET_TABLE")
     
+    @classmethod
+    def is_table_exists(self, table_name='') :
+        self.init_db_conn(self)
+        return table_name in self.database_choice.get_tables()
+
+    '''
+    Initialize database connection
+    '''
+    def init_db_conn(self) :
+        self.database_choice = PostgresqlDatabase(os.environ["POSTGRES_DB"], 
+                                                  user=os.environ["POSTGRES_USER"], 
+                                                  password=os.environ["POSTGRES_PASSWORD"],
+                                                  host=os.environ["POSTGRES_HOST"], 
+                                                  port=5432)
+        self.database_choice.connect()
+
+
     '''
     Creates the table's dictionary
     '''

@@ -177,8 +177,8 @@ class App(customtkinter.CTk):
     def copy_token(self) :
         pyperclip.copy(self.auth_token)
 
-#TODO: Clear all file entries, and db
 th = dh.TableHandler()
 file_list = th.get_file_uploads()
 app = App(token=th.auth_token, file_list=file_list)
 app.mainloop()
+

@@ -1,6 +1,7 @@
 from models import LocalDetails, FileList
 from peewee import *
 import string, random
+import remote_db_handler as rh
 
 class TableHandler() :
     
@@ -50,7 +51,14 @@ class TableHandler() :
             all += digits + symbols
             length = 12
 
-        return "".join(random.sample(all, length))
+        res_uid = "".join(random.sample(all, length))
+        r = rh.RemoteDB.is_table_exists(table_name=res_uid)
+
+        while r : 
+            res_uid = "".join(random.sample(all, length))
+            r = rh.RemoteDB.is_table_exists(table_name=res_uid)
+
+        return res_uid
 
     # Creates a file entry
     def insert_file_upload(self, f_path) :
