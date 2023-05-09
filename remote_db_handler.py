@@ -47,7 +47,11 @@ class RemoteDB() :
             return pd.read_csv(file)
         elif ext == '.xls' or ext == '.xlsx' : 
             return pd.read_excel(file)
-
+    
+    @classmethod
+    def remove_file_instance(self, table_name) : 
+        self.init_db_conn(self)
+        self.database_choice.execute_sql(f"DROP TABLE {table_name.lower()}")
 
     '''
     Updates the table based on changes
@@ -149,4 +153,3 @@ class RemoteDB() :
     '''
     def delete_table(self) : 
         self.database_choice.drop_tables((self.model))
-

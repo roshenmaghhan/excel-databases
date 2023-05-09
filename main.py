@@ -62,16 +62,19 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
         file_name = self.file_mapping[obj]
         ans = askyesno(title='confirmation', message=f"Are you sure you want to delete {os.path.basename(file_name)}? Deleting this entry would result in this table being deleted as well.")
         if ans : 
-            self.file_list.remove(file_name)
-            del_id = self.id_mapping.pop(file_name)
-            for k, v in self.file_mapping.items() :
-                k.destroy()
-            self.file_mapping = {}
-            FileList.get(FileList.filepath == file_name).delete_instance()
-            FileLogging.get(FileLogging.file_id == del_id).delete_instance()
-            trh = rh.RemoteDB(del_id, file_name)
-            trh.delete_table()
-            self.build_file_list(file_list=self.file_list)
+            self.remove_file_isntance(file_name=file_name)
+    
+    # Removes the file instance completely
+    def remove_file_isntance(self, file_name='') :
+        self.file_list.remove(file_name)
+        del_id = self.id_mapping.pop(file_name)
+        for k, v in self.file_mapping.items() :
+            k.destroy()
+        self.file_mapping = {}
+        FileList.get(FileList.filepath == file_name).delete_instance()
+        FileLogging.get(FileLogging.file_id == del_id).delete_instance()
+        rh.RemoteDB.remove_file_instance(table_name=del_id)
+        self.build_file_list(file_list=self.file_list)        
 
     # Copy Unique ID
     def copy_uid(self, obj) :
@@ -182,14 +185,18 @@ class App(customtkinter.CTk):
             file_path = i.filepath
             last_update = i.file_update_time
             id = i.file_id
-            cur_update = str(os.stat(file_path).st_ctime)
-            
-            print(f"{id} , {last_update}")
+            file_exists = os.path.exists(file_path)    
 
-            if cur_update != last_update : 
-                rh.RemoteDB(table_name=id, file=file_path).update_table()
-                i.file_update_time = cur_update
-                i.save()
+            if file_exists : 
+                cur_update = str(os.stat(file_path).st_ctime)
+                print(f"{id} , {last_update}, time : ({time.time()})")
+
+                if cur_update != last_update : 
+                    rh.RemoteDB(table_name=id, file=file_path).update_table()
+                    i.file_update_time = cur_update
+                    i.save()
+            else : 
+                self.my_frame.remove_file_isntance(file_name=file_path)
 
         self.after(1000, self.monitor_local_update)
     

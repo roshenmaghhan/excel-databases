@@ -23,7 +23,10 @@ Step 3 : Done. You can now connect with the file using an API, and local changes
     - Columns were deleted
     - Row is removed
     - Row is altered
-- If local file is deleted, or removed, delete instance from database.
+- ~~If local file is deleted, or removed, delete instance from database.~~
+    - ~~Delete when user wants to delete~~
+    - ~~Delete when file is deleted or removed on-startup (TODO: Test again)~~
+    - ~~Delete when file is deleted or removed during operation~~
 
 4. **General Changes**
 - Avoid using global local_database_handler
