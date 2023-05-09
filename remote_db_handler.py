@@ -35,6 +35,16 @@ class RemoteDB() :
         return table_name in self.database_choice.get_tables()
 
     '''
+    Updates the table based on changes
+    - Recreates the table's columns, and re-populates the data
+    '''
+    def update_table(self) :
+        self.delete_table()
+        self.table_operation(operation="CREATE_TABLE") # Recreates the table
+        self.populate_table()
+        print("Table Re-created")
+
+    '''
     Initialize database connection
     '''
     def init_db_conn(self) :
@@ -135,5 +145,5 @@ class RemoteDB() :
             return pd.read_parquet(file)
         elif ext == '.csv' : 
             return pd.read_csv(file)
-        elif ext == '.xls' or ext == '.xslx' : 
+        elif ext == '.xls' or ext == '.xlsx' : 
             return pd.read_excel(file)

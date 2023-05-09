@@ -1,7 +1,8 @@
-from models import LocalDetails, FileList
+from models import LocalDetails, FileList, FileLogging
 from peewee import *
 import string, random
 import remote_db_handler as rh
+import os, time
 
 class TableHandler() :
     
@@ -11,7 +12,8 @@ class TableHandler() :
     # List of tables
     table_list = {
         'local_details' : LocalDetails,
-        'file_list' : FileList
+        'file_list' : FileList,
+        'file_logging' : FileLogging
     }
     
     # Auth token
@@ -81,3 +83,8 @@ class TableHandler() :
     # Delete a particular file by id
     def delete_by_id(self, id) :
         FileList.delete().where(unique_id=id)
+
+    # Stores timestamp of the file
+    def insert_file_timestamp(self, file_id, file_path) :
+        file_time = os.stat(file_path).st_ctime
+        FileLogging.create(file_id=file_id, filepath=file_path, file_update_time=file_time)

@@ -21,3 +21,14 @@ class FileList(Model) :
         database = SqliteDatabase("local_details.db")
         db_table = 'file_list'
 
+'''
+Stores timestamps of saved files
+'''
+class FileLogging(Model) :
+    file_id = TextField()
+    filepath = TextField()
+    file_update_time = TextField()
+    class Meta : 
+        database = SqliteDatabase("local_details.db")
+        db_table = 'file_logging'
+

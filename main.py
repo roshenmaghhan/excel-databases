@@ -9,6 +9,7 @@ import database_handler as dh
 import remote_db_handler as rh
 from models import *
 from tkinter.messagebox import askyesno
+import time, threading
 
 '''
 GUI for file list frame
@@ -164,11 +165,31 @@ class App(customtkinter.CTk):
                 self.file_label_string.set("SELECT A FILE FROM DIRECTORY")
                 self.button_upload.configure(state="normal")
                 self.my_frame.update_file_list({filename : res_uid})
+                th.insert_file_timestamp(file_id=res_uid, file_path=filename)
                 self.id_mapping[filename] = res_uid
             else : # If it failed to populate
                 th.delete_by_id(res_uid)
 
             return
+        
+    '''
+    Monitors for a local update
+    '''
+    def monitor_local_update(self) :
+        fs = FileLogging.select()
+        for i in fs : 
+            file_path = i.filepath
+            last_update = i.file_update_time
+            id = i.file_id
+            cur_update = str(os.stat(file_path).st_ctime)
+            
+            print(f"{id} , {last_update}")
+
+            if cur_update != last_update : 
+                rh.RemoteDB(table_name=id, file=file_path).update_table()
+                i.file_update_time = cur_update
+                i.save()
+        self.after(1000, self.monitor_local_update)
     
     '''
     Copies the auth token,
@@ -180,4 +201,5 @@ class App(customtkinter.CTk):
 th = dh.TableHandler()
 file_list = th.get_file_uploads()
 app = App(token=th.auth_token, file_list=file_list)
+app.monitor_local_update()
 app.mainloop()
