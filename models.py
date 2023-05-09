@@ -31,4 +31,3 @@ class FileLogging(Model) :
     class Meta : 
         database = SqliteDatabase("local_details.db")
         db_table = 'file_logging'
-

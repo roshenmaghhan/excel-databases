@@ -3,6 +3,7 @@ from peewee import *
 import string, random
 import remote_db_handler as rh
 import os, time
+import pandas as pd
 
 class TableHandler() :
     
@@ -13,7 +14,7 @@ class TableHandler() :
     table_list = {
         'local_details' : LocalDetails,
         'file_list' : FileList,
-        'file_logging' : FileLogging
+        'file_logging' : FileLogging,
     }
     
     # Auth token

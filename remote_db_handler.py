@@ -35,6 +35,21 @@ class RemoteDB() :
         return table_name in self.database_choice.get_tables()
 
     '''
+    Returns df depending on file extension
+    '''
+    @classmethod
+    def get_df_by_type(self, file) :
+        filename, ext = os.path.splitext(file)
+
+        if ext == '.parquet' : 
+            return pd.read_parquet(file)
+        elif ext == '.csv' : 
+            return pd.read_csv(file)
+        elif ext == '.xls' or ext == '.xlsx' : 
+            return pd.read_excel(file)
+
+
+    '''
     Updates the table based on changes
     - Recreates the table's columns, and re-populates the data
     '''
@@ -135,15 +150,3 @@ class RemoteDB() :
     def delete_table(self) : 
         self.database_choice.drop_tables((self.model))
 
-    '''
-    Returns df depending on file extension
-    '''
-    def get_df_by_type(self, file) :
-        filename, ext = os.path.splitext(file)
-
-        if ext == '.parquet' : 
-            return pd.read_parquet(file)
-        elif ext == '.csv' : 
-            return pd.read_csv(file)
-        elif ext == '.xls' or ext == '.xlsx' : 
-            return pd.read_excel(file)

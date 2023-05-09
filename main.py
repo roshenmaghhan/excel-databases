@@ -68,6 +68,7 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
                 k.destroy()
             self.file_mapping = {}
             FileList.get(FileList.filepath == file_name).delete_instance()
+            FileLogging.get(FileLogging.file_id == del_id).delete_instance()
             trh = rh.RemoteDB(del_id, file_name)
             trh.delete_table()
             self.build_file_list(file_list=self.file_list)
@@ -166,6 +167,7 @@ class App(customtkinter.CTk):
                 self.button_upload.configure(state="normal")
                 self.my_frame.update_file_list({filename : res_uid})
                 th.insert_file_timestamp(file_id=res_uid, file_path=filename)
+                th.insert_table_columns(file_id=res_uid, file_path=filename)
                 self.id_mapping[filename] = res_uid
             else : # If it failed to populate
                 th.delete_by_id(res_uid)
@@ -189,6 +191,7 @@ class App(customtkinter.CTk):
                 rh.RemoteDB(table_name=id, file=file_path).update_table()
                 i.file_update_time = cur_update
                 i.save()
+
         self.after(1000, self.monitor_local_update)
     
     '''
