@@ -167,7 +167,6 @@ class App(customtkinter.CTk):
                 self.button_upload.configure(state="normal")
                 self.my_frame.update_file_list({filename : res_uid})
                 th.insert_file_timestamp(file_id=res_uid, file_path=filename)
-                th.insert_table_columns(file_id=res_uid, file_path=filename)
                 self.id_mapping[filename] = res_uid
             else : # If it failed to populate
                 th.delete_by_id(res_uid)

@@ -16,8 +16,13 @@ Step 3 : Done. You can now connect with the file using an API, and local changes
 
 3. **Monitor local file for changes**
 - ~~Add a local table to monitor for last changes made on a file~~
-- If local file is updated, update the table, then update the file's table
-    - Update table based on new columns, or new data. (Avoid re-creating table)
+- Add file versioning to check if : 
+    - Columns are changed ( Name )
+    - New columns are added
+    - New row is inserted
+    - Columns were deleted
+    - Row is removed
+    - Row is altered
 - If local file is deleted, or removed, delete instance from database.
 
 4. **General Changes**
