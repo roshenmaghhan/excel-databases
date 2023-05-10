@@ -43,16 +43,11 @@ class TableHandler() :
     # Generates the auth token
     def generate_token(self, type) :
         lower = string.ascii_lowercase
-        upper = string.ascii_uppercase
+        digits = string.digits
 
-        all = lower + upper
-        length = 8
-        
-        if type == "AUTH_TOKEN" : 
-            digits = string.digits
-            symbols = string.punctuation
-            all += digits + symbols
-            length = 12
+
+        all = lower + digits
+        length = 12 if type == "AUTH_TOKEN" else 8
 
         res_uid = "".join(random.sample(all, length))
         r = rh.RemoteDB.is_table_exists(table_name=res_uid)
