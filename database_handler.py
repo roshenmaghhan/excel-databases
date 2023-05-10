@@ -26,6 +26,23 @@ class TableHandler() :
         self.set_up_tables()
         self.set_auth_token()
 
+    # Stores timestamp of the file
+    @classmethod
+    def insert_file_timestamp(self, file_id, file_path) :
+        file_time = os.stat(file_path).st_ctime
+        FileLogging.create(file_id=file_id, filepath=file_path, file_update_time=file_time)
+
+    # Creates a file entry
+    @classmethod
+    def insert_file_upload(self, f_path) :
+        uid = self.generate_token(self, type="DB_UNIQUE_ID")
+        FileList.create(filepath=f_path, unique_id=uid)
+        return uid
+
+    # Delete a particular file by id
+    @classmethod
+    def delete_by_id(self, id) :
+        FileList.delete().where(unique_id=id)
 
     # Set up the tables
     def set_up_tables(self) :
@@ -43,11 +60,14 @@ class TableHandler() :
     # Generates the auth token
     def generate_token(self, type) :
         lower = string.ascii_lowercase
-        digits = string.digits
 
+        all = lower
+        length = 8
 
-        all = lower + digits
-        length = 12 if type == "AUTH_TOKEN" else 8
+        if type == "AUTH_TOKEN" : 
+            length = 12
+            digits = string.digits
+            all += digits
 
         res_uid = "".join(random.sample(all, length))
         r = rh.RemoteDB.is_table_exists(table_name=res_uid)
@@ -57,12 +77,6 @@ class TableHandler() :
             r = rh.RemoteDB.is_table_exists(table_name=res_uid)
 
         return res_uid
-
-    # Creates a file entry
-    def insert_file_upload(self, f_path) :
-        uid = self.generate_token("DB_UNIQUE_ID")
-        FileList.create(filepath=f_path, unique_id=uid)
-        return uid
 
     # Get file uploads
     def get_file_uploads(self) :
@@ -75,12 +89,3 @@ class TableHandler() :
     # Delete all records of file_list table
     def delete_file_uploads(self) :
         FileList.delete().execute()
-
-    # Delete a particular file by id
-    def delete_by_id(self, id) :
-        FileList.delete().where(unique_id=id)
-
-    # Stores timestamp of the file
-    def insert_file_timestamp(self, file_id, file_path) :
-        file_time = os.stat(file_path).st_ctime
-        FileLogging.create(file_id=file_id, filepath=file_path, file_update_time=file_time)

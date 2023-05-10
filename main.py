@@ -161,7 +161,7 @@ class App(customtkinter.CTk):
             self.file_label_string.set(f"Uploading {filename_trunc} ...")
             self.button_upload.configure(state="disabled")
             
-            res_uid = th.insert_file_upload(f_path=filename)
+            res_uid = dh.TableHandler.insert_file_upload(f_path=filename)
             trh = rh.RemoteDB(res_uid, filename)
             populate = trh.populate_table() #DONE: Check if values are properly populated
             
@@ -169,10 +169,10 @@ class App(customtkinter.CTk):
                 self.file_label_string.set("SELECT A FILE FROM DIRECTORY")
                 self.button_upload.configure(state="normal")
                 self.my_frame.update_file_list({filename : res_uid})
-                th.insert_file_timestamp(file_id=res_uid, file_path=filename)
+                dh.TableHandler.insert_file_timestamp(file_id=res_uid, file_path=filename)
                 self.id_mapping[filename] = res_uid
             else : # If it failed to populate
-                th.delete_by_id(res_uid)
+                dh.TableHandler.delete_by_id(res_uid)
 
             return
         

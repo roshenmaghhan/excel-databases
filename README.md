@@ -29,8 +29,9 @@ Step 3 : Done. You can now connect with the file using an API, and local changes
     - ~~Delete when file is deleted or removed during operation~~
 
 4. **General Changes**
-- Avoid using global local_database_handler
+- ~~Avoid using global local_database_handler~~
 - ~~Change auth token and tables to be only text and numbers~~
+- Structure files and folders
 
 ## Error Handling
 - If file can't be read.
