@@ -1,7 +1,7 @@
 from models import LocalDetails, FileList, FileLogging
 from peewee import *
 import string, random
-import remote_db_handler as rh
+import utils.remote_db_handler as rh
 import os, time
 import pandas as pd
 

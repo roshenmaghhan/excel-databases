@@ -5,8 +5,8 @@ from PIL import Image, ImageTk
 import os
 import pyperclip
 from peewee import *
-import database_handler as dh
-import remote_db_handler as rh
+import utils.database_handler as dh
+import utils.remote_db_handler as rh
 from models import *
 from tkinter.messagebox import askyesno
 import time, threading
@@ -126,7 +126,7 @@ class App(customtkinter.CTk):
         file_label.place(relx=0.5, rely=0.55, anchor=tkinter.CENTER)
         self.button_upload = customtkinter.CTkButton(master=self.frame, text="SELECT FILE", state="normal", command=self.upload_file)
         self.button_upload.place(relx=0.5, rely=0.7, anchor=tkinter.CENTER)
-        image1 = Image.open("upload.png")
+        image1 = Image.open("./images/upload.png")
         image1 = image1.resize((80, 80), Image.ANTIALIAS)
         test = ImageTk.PhotoImage(image1)
         label1 = customtkinter.CTkLabel(self.frame, image=test, text="")
