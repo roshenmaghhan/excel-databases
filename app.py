@@ -39,7 +39,7 @@ def main() :
     # Check if table and auth token match : Err 404
     is_exists = Auth.select().where(Auth.table_id==table_id, Auth.auth_token==auth_token)
     if len(is_exists) == 0 : 
-        response = {401 : "table_id and token doesn't match."}
+        response = {401 : "Unauthorized. table_id and token doesn't match."}
         return app.response_class(response=json.dumps(response), status=401, mimetype='application/json')
 
     # Return all rows from the table

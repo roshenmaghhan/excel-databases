@@ -1,9 +1,10 @@
-from models import LocalDetails, FileList, FileLogging
+from models import FileList, FileLogging
 from peewee import *
 import string, random
 import utils.remote_db_handler as rh
 import os, time
 import pandas as pd
+import uuid
 
 class TableHandler() :
     
@@ -12,7 +13,6 @@ class TableHandler() :
     
     # List of tables
     table_list = {
-        'local_details' : LocalDetails,
         'file_list' : FileList,
         'file_logging' : FileLogging,
     }
@@ -54,8 +54,9 @@ class TableHandler() :
     # Sets the auth token
     def set_auth_token(self) : 
         temp_token = self.generate_token("AUTH_TOKEN")
-        auth_details, created = LocalDetails.get_or_create(attribute="auth_token",defaults={'value': temp_token})
-        self.auth_token = auth_details.value
+        device_id = self.get_device_id()
+        auth_token = rh.RemoteDB.insert_device_token(device_id=device_id, auth_token=temp_token)
+        self.auth_token = auth_token
 
     # Generates the auth token
     def generate_token(self, type) :
@@ -89,3 +90,7 @@ class TableHandler() :
     # Delete all records of file_list table
     def delete_file_uploads(self) :
         FileList.delete().execute()
+
+    # Gets the Device ID
+    def get_device_id(self) : 
+        return uuid.UUID(int=uuid.getnode())

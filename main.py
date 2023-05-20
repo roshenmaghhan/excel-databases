@@ -209,9 +209,9 @@ class App(customtkinter.CTk):
     def copy_token(self) :
         pyperclip.copy(self.auth_token)
 
+rh.RemoteDB.init_remote_tables()
 th = dh.TableHandler()
 file_list = th.get_file_uploads()
-rh.RemoteDB.init_auth_table()
 app = App(token=th.auth_token, file_list=file_list)
 app.monitor_local_update()
 app.mainloop()

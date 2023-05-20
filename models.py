@@ -6,16 +6,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 '''
-Local details for the table (Local Table)
-'''
-class LocalDetails(Model) :
-    attribute = TextField()
-    value = TextField()
-    class Meta : 
-        database = SqliteDatabase("local_details.db")
-        db_table = 'local_details'
-
-'''
 Uploaded file details (Local Table)
 '''
 class FileList(Model) :
@@ -36,6 +26,9 @@ class FileLogging(Model) :
         database = SqliteDatabase("local_details.db")
         db_table = 'file_logging'
 
+'''
+Creates Auth table (Remote Table)
+'''
 class Auth(Model) : 
     table_id = TextField()
     auth_token = TextField()
@@ -46,3 +39,17 @@ class Auth(Model) :
                     host=os.environ["POSTGRES_HOST"], 
                     port=os.environ["POSTGRES_PORT"])
         db_table = 'auth_table'
+
+'''
+Creates an entry of unique devices, as well as their tokens
+'''
+class DeviceID(Model) : 
+    device_id = TextField()
+    auth_token = TextField()
+    class Meta : 
+        database = PostgresqlDatabase(os.environ["POSTGRES_DB"], 
+                    user=os.environ["POSTGRES_USER"], 
+                    password=os.environ["POSTGRES_PASSWORD"],
+                    host=os.environ["POSTGRES_HOST"], 
+                    port=os.environ["POSTGRES_PORT"])
+        db_table = 'device_id'

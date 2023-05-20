@@ -3,7 +3,7 @@ import numpy as np
 from peewee import *
 import os
 from dotenv import load_dotenv
-from models import Auth
+from models import Auth, DeviceID
 
 load_dotenv()
 
@@ -44,11 +44,13 @@ class RemoteDB() :
     - If auth table already exists, do nothing 
     '''
     @classmethod
-    def init_auth_table(self) : 
+    def init_remote_tables(self) : 
         self.init_db_conn(self)
         all_tables = self.database_choice.get_tables()
         if 'auth_table' not in all_tables : 
             Auth.create_table()
+        if 'device_id' not in all_tables : 
+            DeviceID.create_table()
 
     '''
     Inserts the auth token and table id into the db
@@ -83,6 +85,16 @@ class RemoteDB() :
     def remove_file_instance(self, table_name) : 
         self.init_db_conn(self)
         self.database_choice.execute_sql(f"DROP TABLE {table_name.lower()}")
+
+    '''
+    Inserts device_id and device's auth_token
+    '''
+    @classmethod
+    def insert_device_token(self, device_id, auth_token) : 
+        self.init_db_conn(self)
+        auth_details, created = DeviceID.get_or_create(device_id=device_id,defaults={'auth_token': auth_token})
+        return auth_details.auth_token
+
 
     '''
     Updates the table based on changes
