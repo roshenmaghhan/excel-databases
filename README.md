@@ -10,8 +10,8 @@ Step 3 : Done. You can now connect with the file using an API, and local changes
 1. **Retrieve unique identifier for each machine.**
 - Avoid storing anything locally, store all on a remote database.
 
-2. **Create API for fetching data**
-- In remote db, add local token and tables into auth table.
+~~2. **Create API for fetching data**~~
+- ~~In remote db, add local token and tables into auth table.~~
 - ~~Create an API to allow data-fetching from the local file.~~
 
 3. **Monitor local file for changes**
