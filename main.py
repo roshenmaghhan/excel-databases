@@ -74,6 +74,7 @@ class FileListFrame(customtkinter.CTkScrollableFrame):
         FileList.get(FileList.filepath == file_name).delete_instance()
         FileLogging.get(FileLogging.file_id == del_id).delete_instance()
         rh.RemoteDB.remove_file_instance(table_name=del_id)
+        rh.RemoteDB.auth_table_operation(table_id=del_id, operation='DELETE')
         self.build_file_list(file_list=self.file_list)        
 
     # Copy Unique ID
@@ -110,7 +111,7 @@ class App(customtkinter.CTk):
         auth_token = tkinter.StringVar()
         auth_token.set(f"AUTH TOKEN : {self.auth_token}")
         self.tkn_btn = customtkinter.CTkButton(self, text="COPY AUTH TOKEN", fg_color="#E5E5E5", text_color="#5b5b5b", hover_color="#999999", command=self.copy_token)
-        self.heading = customtkinter.CTkLabel(self, text=auth_token.get(), text_color="#e5e5e5",font=("Copperplate", 20))
+        self.heading = customtkinter.CTkLabel(self, text=auth_token.get(), text_color="#e5e5e5",font=("Songti TC", 20))
         self.heading.grid(row=0, column=0, padx=0, pady=(30,0))
         self.tkn_btn.grid(row=1, column=0, padx=0, pady=(15, 30))
         
@@ -171,6 +172,7 @@ class App(customtkinter.CTk):
                 self.my_frame.update_file_list({filename : res_uid})
                 dh.TableHandler.insert_file_timestamp(file_id=res_uid, file_path=filename)
                 self.id_mapping[filename] = res_uid
+                rh.RemoteDB.auth_table_operation(table_id=res_uid, token=self.auth_token, operation='INSERT')
             else : # If it failed to populate
                 dh.TableHandler.delete_by_id(res_uid)
 
@@ -209,6 +211,7 @@ class App(customtkinter.CTk):
 
 th = dh.TableHandler()
 file_list = th.get_file_uploads()
+rh.RemoteDB.init_auth_table()
 app = App(token=th.auth_token, file_list=file_list)
 app.monitor_local_update()
 app.mainloop()

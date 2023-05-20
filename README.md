@@ -12,7 +12,7 @@ Step 3 : Done. You can now connect with the file using an API, and local changes
 
 2. **Create API for fetching data**
 - In remote db, add local token and tables into auth table.
-- Create an API to allow data-fetching from the local file.
+- ~~Create an API to allow data-fetching from the local file.~~
 
 3. **Monitor local file for changes**
 - ~~Add a local table to monitor for last changes made on a file~~
@@ -28,7 +28,7 @@ Step 3 : Done. You can now connect with the file using an API, and local changes
     - ~~Delete when file is deleted or removed on-startup (TODO: Test again)~~
     - ~~Delete when file is deleted or removed during operation~~
 
-4. **General Changes**
+~~4. **General Changes**~~
 - ~~Avoid using global local_database_handler~~
 - ~~Change auth token and tables to be only text and numbers~~
 - ~~Structure files and folders~~

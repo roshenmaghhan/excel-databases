@@ -3,6 +3,7 @@ import numpy as np
 from peewee import *
 import os
 from dotenv import load_dotenv
+from models import Auth
 
 load_dotenv()
 
@@ -29,10 +30,37 @@ class RemoteDB() :
         else : 
             self.model = self.table_operation(operation="GET_TABLE")
     
+    '''
+    Checks if a particular table exists
+    '''
     @classmethod
     def is_table_exists(self, table_name='') :
         self.init_db_conn(self)
         return table_name in self.database_choice.get_tables()
+
+    '''
+    Initializes the auth table
+    - Creates the auth table if it doesn't exist
+    - If auth table already exists, do nothing 
+    '''
+    @classmethod
+    def init_auth_table(self) : 
+        self.init_db_conn(self)
+        all_tables = self.database_choice.get_tables()
+        if 'auth_table' not in all_tables : 
+            Auth.create_table()
+
+    '''
+    Inserts the auth token and table id into the db
+    '''
+    @classmethod
+    def auth_table_operation(self, table_id, token='', operation='INSERT') : 
+        self.init_db_conn(self)
+
+        if operation == 'INSERT' : 
+            Auth.create(table_id=table_id, auth_token=token)
+        elif operation == 'DELETE' : 
+            Auth.delete().where(table_id=table_id)
 
     '''
     Returns df depending on file extension
@@ -48,6 +76,9 @@ class RemoteDB() :
         elif ext == '.xls' or ext == '.xlsx' : 
             return pd.read_excel(file)
     
+    '''
+    Deletes the table entirely
+    '''
     @classmethod
     def remove_file_instance(self, table_name) : 
         self.init_db_conn(self)
