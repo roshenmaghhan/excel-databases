@@ -10,7 +10,7 @@ TLDR; A desktop application to transform local *.xls*, *.xlsx*, *.parquet* and *
 
 
 ## DEMO
-[![final9f7e37d50282a9f9.gif](https://s12.gifyu.com/images/final9f7e37d50282a9f9.gif)](https://gifyu.com/image/Sn10M)
+![Product Demo](https://github.com/roshenmaghhan/excel-databases/blob/main/images/demo.gif)
 
 ## How It works
 Step 1 : Upload a file to the GUI.  
