@@ -62,7 +62,7 @@ class RemoteDB() :
         if operation == 'INSERT' : 
             Auth.create(table_id=table_id, auth_token=token)
         elif operation == 'DELETE' : 
-            Auth.delete().where(table_id=table_id)
+            Auth.delete().where(Auth.table_id==table_id)
 
     '''
     Returns df depending on file extension
